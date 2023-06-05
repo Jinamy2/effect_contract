@@ -949,6 +949,7 @@ class Ui_MainWindow(object):
         self.tabWindet.currentChanged.connect(self.loadIndGroup)
         self.tabWindet.currentChanged.connect(self.startHidden)
         self.tabWindet.currentChanged.connect(self.countStaffFinall)
+        self.tabWindet.currentChanged.connect(self.loadSalaryPos)
         self.comboBox_dep.currentIndexChanged.connect(self.loadGroupForEntered)
         self.comboBox_dep.currentIndexChanged.connect(self.countStaffFinall)
         self.ind_group_table.itemDoubleClicked.connect(self.indicators_widget)
