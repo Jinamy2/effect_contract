@@ -40,14 +40,21 @@ class Ui_Form_Finally(object):
         font.setPointSize(12)
         self.save_xlsx_file.setFont(font)
         self.save_xlsx_file.setObjectName("save_xlsx_file")
+        self.destroy_wind = QtWidgets.QPushButton(parent=Form)
+        self.destroy_wind.setGeometry(QtCore.QRect(980, 10, 101, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.destroy_wind.setFont(font)
+        self.destroy_wind.setObjectName("destroy_wind")
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
         self.save_xlsx_file.clicked.connect(self.SaveFile)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "Итоговая зарплата отдела"))
         self.save_xlsx_file.setText(_translate("Form", "Скачать xlsx файл"))
+        self.destroy_wind.setText(_translate("Form", "Выйти"))
         self.dep_line.setVisible(False)
 
 

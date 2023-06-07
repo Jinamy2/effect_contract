@@ -24,6 +24,7 @@ class Ui_MainWindow(object):
         self.ui.loadStaff()
         self.ui.loadPos()
         self.s_p.show()
+        self.ui.destroy_wind.clicked.connect(self.s_p.close)
         self.loadGroupForEntered()
         self.countStaffFinall()
 
@@ -37,6 +38,7 @@ class Ui_MainWindow(object):
         self.ui.loadPosIndGroup()
         self.ui.loadInd()
         self.window.show()
+        self.ui.destroy_wind.clicked.connect(self.window.close)
 
     # открытие окна для заполнения показателей
     def finally_salary_widget(self):
@@ -50,6 +52,7 @@ class Ui_MainWindow(object):
         self.ui.loadStaffI()
         self.window.show()
         self.ui.add_staff_int.clicked.connect(self.countStaffFinall)
+        self.ui.destroy_wind.clicked.connect(self.window.close)
 
     # открытие окна с итоговым отчет о ЗП отдела
     def fin_salary_dep_widget(self):
@@ -138,6 +141,7 @@ class Ui_MainWindow(object):
         self.ui.final_salary_dep.resizeColumnsToContents()
         self.ui.dep_line.setText(self.comboBox_dep.currentText())
         self.window.show()
+        self.ui.destroy_wind.clicked.connect(self.window.close)
         connection.close()
 
     # работа с таблицей отделов:
@@ -657,7 +661,6 @@ class Ui_MainWindow(object):
                 database=db_name,
                 cursorclass=pymysql.cursors.DictCursor,
             )
-
         except Exception as ex:
             print("Соединение прервано")
             print(ex)
@@ -949,6 +952,7 @@ class Ui_MainWindow(object):
         self.tabWindet.currentChanged.connect(self.loadIndGroup)
         self.tabWindet.currentChanged.connect(self.startHidden)
         self.tabWindet.currentChanged.connect(self.countStaffFinall)
+        self.tabWindet.currentChanged.connect(self.loadSalaryPos)
         self.comboBox_dep.currentIndexChanged.connect(self.loadGroupForEntered)
         self.comboBox_dep.currentIndexChanged.connect(self.countStaffFinall)
         self.ind_group_table.itemDoubleClicked.connect(self.indicators_widget)
