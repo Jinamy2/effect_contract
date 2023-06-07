@@ -135,13 +135,12 @@ class Ui_Form(object):
         font.setPointSize(12)
         self.no.setFont(font)
         self.no.setObjectName("no")
-
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "Добавить должность"))
         self.label.setText(_translate("Form", "Добавить должность"))
         self.label_8.setText(_translate("Form", "Отдел"))
         self.label_9.setText(_translate("Form", "Должность"))

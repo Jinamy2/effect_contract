@@ -265,6 +265,12 @@ class Ui_Form_Add_Ind(object):
         self.fin_line = QtWidgets.QLineEdit(parent=Form)
         self.fin_line.setGeometry(QtCore.QRect(340, 70, 1, 1))
         self.fin_line.setObjectName("fin_line")
+        self.destroy_wind = QtWidgets.QPushButton(parent=Form)
+        self.destroy_wind.setGeometry(QtCore.QRect(960, 10, 101, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.destroy_wind.setFont(font)
+        self.destroy_wind.setObjectName("destroy_wind")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -272,8 +278,9 @@ class Ui_Form_Add_Ind(object):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "Занести значения показателей"))
         self.add_staff_int.setText(_translate("Form", "Занести значения показателей"))
+        self.destroy_wind.setText(_translate("Form", "Выйти"))
         self.ind_group_input_line.setVisible(False)
         self.dep_line.setVisible(False)
         self.fin_line.setVisible(False)

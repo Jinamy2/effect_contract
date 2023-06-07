@@ -115,7 +115,7 @@ class Ui_Add_Staff(object):
 
     def retranslateUi(self, Add_Staff):
         _translate = QtCore.QCoreApplication.translate
-        Add_Staff.setWindowTitle(_translate("Add_Staff", "Dialog"))
+        Add_Staff.setWindowTitle(_translate("Add_Staff", "Создать сотрудника"))
         self.label.setText(_translate("Add_Staff", "ФИО"))
         self.label_2.setText(_translate("Add_Staff", "Должность"))
         self.label_3.setText(_translate("Add_Staff", "Логин"))
