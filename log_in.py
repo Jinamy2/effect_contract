@@ -61,7 +61,7 @@ class Ui_Form_Log(object):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "Эффективный контракт"))
         self.label.setText(_translate("Form", "Для доступа в систему"))
         self.label_2.setText(_translate("Form", "введите свой логин и пароль"))
         self.label_3.setText(_translate("Form", "Логин"))
