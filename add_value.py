@@ -28,7 +28,7 @@ class Ui_Form_Add_Ind(object):
         name_dep = self.dep_line.text()
         name_group = self.ind_group_input_line.text()
         cursor.execute(
-            "select CONCAT(fam, ' ', name, ' ',otch) from staff where staff.position in (select position.id from position where  position.department in (select department.id_dep from department where department.name_dep = '{}')) and staff.position in (select pos_and_group.id_pos from pos_and_group where pos_and_group.id_group in (select position_group.id from position_group where position_group.name_group = '{}'))".format(
+            "select DISTINCT CONCAT(fam, ' ', name, ' ',otch) from staff where staff.position in (select position.id from position where  position.department in (select department.id_dep from department where department.name_dep = '{}')) and staff.position in (select pos_and_group.id_pos from pos_and_group where pos_and_group.id_group in (select position_group.id from position_group where position_group.name_group = '{}'))".format(
                 name_dep, name_group
             )
         )
@@ -108,7 +108,8 @@ class Ui_Form_Add_Ind(object):
                     i, 1, QTableWidgetItem(str(koaf[0]["koaf"]))
                 )
             else:
-                self.staff_indicators_table.item(i, 0).setBackground(
+                self.staff_indicators_table.setItem(i, 1, QTableWidgetItem(str(1.0)))
+                self.staff_indicators_table.item(i, 1).setBackground(
                     QtGui.QColor(255, 255, 0)
                 )
             for j in range(2, self.staff_indicators_table.columnCount()):
@@ -133,7 +134,8 @@ class Ui_Form_Add_Ind(object):
                         i, j, QTableWidgetItem(str(value_ind[0]["value"]))
                     )
                 else:
-                    self.staff_indicators_table.item(i, 0).setBackground(
+                    self.staff_indicators_table.setItem(i, j, QTableWidgetItem(str(0)))
+                    self.staff_indicators_table.item(i, j).setBackground(
                         QtGui.QColor(255, 255, 0)
                     )
         connection.close()

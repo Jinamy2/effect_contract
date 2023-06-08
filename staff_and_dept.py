@@ -38,7 +38,6 @@ class Ui_Form_Staff(object):
         cursor = connection.cursor()
         cursor.execute(name_pos_query)
         position_name = cursor.fetchall()
-        print(position_name)
         for row_number, data in enumerate(position_name):
             self.ui.pos_comboBox.addItem("")
             self.ui.pos_comboBox.setItemText(row_number, data["name_pos"])
@@ -213,11 +212,9 @@ class Ui_Form_Staff(object):
         )
         staff = cursor.fetchall()
         self.staff_table.setRowCount(0)
-        self.staff_table.setColumnCount(5)
+        self.staff_table.setColumnCount(7)
         self.staff_table.hideColumn(0)
-        self.staff_table.setHorizontalHeaderLabels(
-            ["id", "ФИО", "Должность", "Логин", "Пароль"]
-        )
+        self.staff_table.hideColumn(6)
         for row_number, row_data in enumerate(staff):
             self.staff_table.insertRow(row_number)
             for c_number, data in enumerate(row_data):
@@ -226,6 +223,24 @@ class Ui_Form_Staff(object):
                     c_number,
                     QTableWidgetItem(str(row_data[data])),
                 )
+        self.staff_table.setHorizontalHeaderLabels(
+            ["id", "ФИО", "Должность", "Логин", "Пароль", "Роль"]
+        )
+        for row_number in range(self.staff_table.rowCount()):
+            staff_id = self.staff_table.item(row_number, 0).text()
+            cursor.execute(
+                "select id,role from role_and_staff where staff = {}".format(staff_id)
+            )
+            role = cursor.fetchall()
+            if cursor.rowcount != 0:
+                role_line = ""
+                for i in range(cursor.rowcount):
+                    role_line += str(role[i]["role"]) + ","
+                self.staff_table.setItem(
+                    row_number, 5, QTableWidgetItem(role_line[:-1])
+                )
+            else:
+                self.staff_table.setItem(row_number, 5, QTableWidgetItem(str(1)))
         self.staff_table.resizeColumnsToContents()
         connection.close()
 
@@ -264,6 +279,22 @@ class Ui_Form_Staff(object):
                 )
             )
             connection.commit()
+            roles = self.staff_table.item(i, 5).text().split(",")
+            pos = self.staff_table.item(i, 2).text()
+            dep = self.dep_line.text()
+            staff_id = self.staff_table.item(i, 0).text()
+            staff = self.staff_table.item(i, 1).text()
+            cursor.execute(
+                "DELETE FROM role_and_staff where staff = '{}'".format(staff_id)
+            )
+            connection.commit()
+            for i in range(len(roles)):
+                cursor.execute(
+                    "INSERT INTO `role_and_staff` (`id`, `role`, `staff`) VALUES (NULL, '{}', (select id from staff where CONCAT(fam, ' ', name, ' ',otch) = '{}' and position in (select id from position where position.name_pos = '{}' and position.department in (select department.id_dep from department where department.name_dep = '{}'))));".format(
+                        roles[i], staff, pos, dep
+                    )
+                )
+                connection.commit()
         self.loadStaff()
         self.edit_staff_table_ok.setVisible(False)
         self.staff_table.setEditTriggers(

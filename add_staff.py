@@ -28,23 +28,35 @@ class Ui_Add_Staff(object):
         fio = self.staff_lineEdit.text().split()
         fam = fio[0]
         name = fio[1]
-        otch = fio[2]
+        if len(fio) == 2:
+            otch = ""
+        else:
+            otch = fio[2]
         pos = self.pos_comboBox.currentText()
         log = self.staff_log_lineEdit.text()
         pas = self.staff_log_lineEdit_2.text()
         dep = self.dep_line.text()
-        print(dep)
         cursor.execute(
             "INSERT INTO `staff` (`id`, `fam`, `name`, `otch`, `login`, `password`, `position`) VALUES (NULL, '{}', '{}', '{}', '{}', '{}', (select id from position where name_pos = '{}' and department in (select id_dep from department where name_dep='{}')));".format(
                 fam, name, otch, log, pas, pos, dep
             )
         )
         connection.commit()
+        if self.role_lineEdit.text() != "":
+            roles = self.role_lineEdit.text().split(",")
+            staff = self.staff_lineEdit.text()
+            for i in range(len(roles)):
+                cursor.execute(
+                    "INSERT INTO `role_and_staff` (`id`, `role`, `staff`) VALUES (NULL, '{}', (select id from staff where CONCAT(fam, ' ', name, ' ',otch) = '{}' and position in (select id from position where position.name_pos = '{}' and position.department in (select department.id_dep from department where department.name_dep = '{}'))));".format(
+                        roles[i], staff, pos, dep
+                    )
+                )
+                connection.commit()
         connection.close()
 
     def setupUi(self, Add_Staff):
         Add_Staff.setObjectName("Add_Staff")
-        Add_Staff.resize(482, 363)
+        Add_Staff.resize(482, 430)
         self.label = QtWidgets.QLabel(parent=Add_Staff)
         self.label.setGeometry(QtCore.QRect(40, 80, 101, 21))
         font = QtGui.QFont()
@@ -84,26 +96,44 @@ class Ui_Add_Staff(object):
         self.staff_log_lineEdit_2 = QtWidgets.QLineEdit(parent=Add_Staff)
         self.staff_log_lineEdit_2.setGeometry(QtCore.QRect(100, 220, 361, 31))
         self.staff_log_lineEdit_2.setObjectName("staff_log_lineEdit_2")
+        self.role_lineEdit = QtWidgets.QLineEdit(parent=Add_Staff)
+        self.role_lineEdit.setGeometry(QtCore.QRect(100, 275, 361, 31))
+        self.role_lineEdit.setObjectName("role_lineEdit")
         self.label_5 = QtWidgets.QLabel(parent=Add_Staff)
         self.label_5.setGeometry(QtCore.QRect(230, 196, 111, 20))
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(parent=Add_Staff)
         self.label_6.setGeometry(QtCore.QRect(230, 250, 111, 20))
         self.label_6.setObjectName("label_6")
+        self.label_9 = QtWidgets.QLabel(parent=Add_Staff)
+        self.label_9.setGeometry(QtCore.QRect(230, 300, 111, 20))
+        self.label_9.setObjectName("label_9")
         self.label_7 = QtWidgets.QLabel(parent=Add_Staff)
         self.label_7.setGeometry(QtCore.QRect(150, 10, 201, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.label_7.setFont(font)
         self.label_7.setObjectName("label_7")
+        self.label_7 = QtWidgets.QLabel(parent=Add_Staff)
+        self.label_7.setGeometry(QtCore.QRect(150, 10, 201, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label_7.setFont(font)
+        self.label_7.setObjectName("label_7")
+        self.label_8 = QtWidgets.QLabel(parent=Add_Staff)
+        self.label_8.setGeometry(QtCore.QRect(30, 280, 101, 21))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label_8.setFont(font)
+        self.label_8.setObjectName("label_8")
         self.add_staff_in_bd = QtWidgets.QPushButton(parent=Add_Staff)
-        self.add_staff_in_bd.setGeometry(QtCore.QRect(40, 300, 151, 31))
+        self.add_staff_in_bd.setGeometry(QtCore.QRect(40, 350, 151, 31))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.add_staff_in_bd.setFont(font)
         self.add_staff_in_bd.setObjectName("add_staff_in_bd")
         self.hide_staff_in_bd = QtWidgets.QPushButton(parent=Add_Staff)
-        self.hide_staff_in_bd.setGeometry(QtCore.QRect(300, 300, 151, 31))
+        self.hide_staff_in_bd.setGeometry(QtCore.QRect(300, 350, 151, 31))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.hide_staff_in_bd.setFont(font)
@@ -123,9 +153,13 @@ class Ui_Add_Staff(object):
         self.label_5.setText(_translate("Add_Staff", "(не обязательно)"))
         self.label_6.setText(_translate("Add_Staff", "(не обязательно)"))
         self.label_7.setText(_translate("Add_Staff", "Добавить сотрудника"))
+        self.label_8.setText(_translate("Add_Staff", "Роль"))
+        self.label_9.setText(_translate("Add_Staff", "(не обязательно)"))
         self.add_staff_in_bd.setText(_translate("Add_Staff", "Готово"))
         self.hide_staff_in_bd.setText(_translate("Add_Staff", "Отмена"))
         self.dep_line.setVisible(False)
+        text = "Перечислите через запятую роли сотрудника. 2-Кадры, 3-Бухгалтер, 4-Рук.отдела, 5-Администратор"
+        self.role_lineEdit.setToolTip(text)
 
 
 if __name__ == "__main__":

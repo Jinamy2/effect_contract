@@ -608,6 +608,44 @@ class Ui_MainWindow(object):
         connection.close()
         self.loadSalaryPos()
 
+    # видимость кнопки для расчета ЗП для отедал бухов
+    def countStaffForBuh(self):
+        try:
+            connection = pymysql.connect(
+                host=host,
+                port=3306,
+                user=user,
+                password=password,
+                database=db_name,
+                cursorclass=pymysql.cursors.DictCursor,
+            )
+        except Exception as ex:
+            print("Соединение прервано")
+            print(ex)
+        cursor = connection.cursor()
+        dep = self.comboBox_dep_2.currentText()
+        cursor.execute(
+            "SELECT COUNT(*) as count FROM `fin_staff_salary` where name_dep in (select department.id_dep from department where department.name_dep = '{}');".format(
+                dep
+            )
+        )
+        count = cursor.fetchall()
+        fin = count[0]["count"]
+        cursor.execute(
+            "SELECT COUNT(*) as count FROM `staff` where position in (select id from position where department in (select department.id_dep from department where department.name_dep = '{}'));".format(
+                dep
+            )
+        )
+        count_s = cursor.fetchall()
+        c_s = count_s[0]["count"]
+        if fin == int(c_s):
+            self.salary_dep_list.setVisible(True)
+        else:
+            self.salary_dep_list.setVisible(False)
+        if int(c_s) == 0:
+            self.salary_dep_list.setVisible(False)
+        connection.close()
+
     # конец блока окладов должностей
 
     # блок ввода значения показателей в группы
@@ -673,7 +711,6 @@ class Ui_MainWindow(object):
         )
         count = cursor.fetchall()
         fin = count[0]["count"]
-        print(fin)
         cursor.execute(
             "SELECT COUNT(*) as count FROM `staff` where position in (select id from position where department in (select department.id_dep from department where department.name_dep = '{}'));".format(
                 dep
@@ -681,7 +718,6 @@ class Ui_MainWindow(object):
         )
         count_s = cursor.fetchall()
         c_s = count_s[0]["count"]
-        print(c_s)
         if fin == int(c_s):
             self.edit_salary_pos_table_true_2.setVisible(True)
         else:
@@ -734,6 +770,7 @@ class Ui_MainWindow(object):
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
         )
         self.edit_salary_pos_table_true_2.setVisible(False)
+        self.salary_dep_list.setVisible(False)
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -883,6 +920,12 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.edit_salary_pos_table_true.setFont(font)
         self.edit_salary_pos_table_true.setObjectName("edit_salary_pos_table_true")
+        self.salary_dep_list = QtWidgets.QPushButton(parent=self.salary_pos)
+        self.salary_dep_list.setGeometry(QtCore.QRect(830, 50, 255, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.salary_dep_list.setFont(font)
+        self.salary_dep_list.setObjectName("edit_salary_pos_table_true")
         self.edit_salary_pos_table_ok = QtWidgets.QPushButton(parent=self.salary_pos)
         self.edit_salary_pos_table_ok.setGeometry(QtCore.QRect(10, 680, 321, 41))
         font = QtGui.QFont()
@@ -1015,6 +1058,9 @@ class Ui_MainWindow(object):
         self.tabWindet.setTabText(
             self.tabWindet.indexOf(self.set_value),
             _translate("MainWindow", "Заполнить показатели"),
+        )
+        self.salary_dep_list.setText(
+            _translate("MainWindow", "Посмотреть отчет по отделу")
         )
         self.loadDep()
         self.loadDepCombo()
