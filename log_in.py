@@ -145,11 +145,13 @@ class Ui_Form_Log(object):
                 else:
                     self.label_5.setVisible(True)
                     self.pas_EditLine.clear()
-        self.startHidden()
+        self.startClear()
 
     def startHidden(self):
         self.label_5.setVisible(False)
         self.label_6.setVisible(False)
+
+    def startClear(self):
         self.pas_EditLine.clear()
         self.login_EditLine.clear()
 
@@ -199,6 +201,7 @@ class Ui_Form_Log(object):
         self.label_6.setGeometry(QtCore.QRect(320, 190, 250, 20))
         self.label_6.setObjectName("label_6")
         self.log_in_button.clicked.connect(self.checkLoginPas)
+        self.login_EditLine.textEdited.connect(self.startHidden)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
