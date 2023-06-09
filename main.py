@@ -25,6 +25,8 @@ class Ui_MainWindow(object):
         self.ui.loadPos()
         self.s_p.show()
         self.ui.destroy_wind.clicked.connect(self.s_p.close)
+        self.ui.destroy_wind.clicked.connect(self.loadGroupForEntered)
+        self.ui.destroy_wind.clicked.connect(self.countStaffFinall)
         self.loadGroupForEntered()
         self.countStaffFinall()
 
@@ -53,6 +55,7 @@ class Ui_MainWindow(object):
         self.window.show()
         self.ui.add_staff_int.clicked.connect(self.countStaffFinall)
         self.ui.destroy_wind.clicked.connect(self.window.close)
+        self.ui.destroy_wind.clicked.connect(self.countStaffFinall)
 
     # открытие окна с итоговым отчет о ЗП отдела
     def fin_salary_dep_widget(self):
@@ -747,6 +750,41 @@ class Ui_MainWindow(object):
                 )
         connection.close()
 
+    # очистить все показатели отдела
+    def DelAllStaff(self):
+        try:
+            connection = pymysql.connect(
+                host=host,
+                port=3306,
+                user=user,
+                password=password,
+                database=db_name,
+                cursorclass=pymysql.cursors.DictCursor,
+            )
+
+        except Exception as ex:
+            print("Соединение прервано")
+            print(ex)
+        cursor = connection.cursor()
+        name_dep = self.comboBox_dep.currentText()
+        countRow = self.ind_group_table_2.rowCount()
+        for i in range(countRow):
+            name_group = self.ind_group_table_2.item(i, 0).text()
+            cursor.execute(
+                "delete from indicators_values where name_ind in (select id from indicators where position_group in (select pos_and_group.id_group from pos_and_group where pos_and_group.id_group in (select position_group.id from position_group where name_group = '{}') and pos_and_group.id_pos in (select position.id from position where position.department in (select id_dep from department where name_dep = '{}')))) ".format(
+                    name_group, name_dep
+                )
+            )
+            connection.commit()
+            cursor.execute(
+                "delete from fin_staff_salary where name_dep in (select id_dep from department where name_dep = '{}')".format(
+                    name_dep
+                )
+            )
+            connection.commit()
+        connection.close()
+        self.countStaffFinall()
+
     # конец блока ввода показателей в группы
 
     # стартовые скрытые объекты
@@ -947,6 +985,12 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.comboBox_dep.setFont(font)
         self.comboBox_dep.setObjectName("comboBox_dep")
+        self.del_all = QtWidgets.QPushButton(parent=self.set_value)
+        self.del_all.setGeometry(QtCore.QRect(10, 680, 151, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.del_all.setFont(font)
+        self.del_all.setObjectName("del_all")
         self.ind_group_table_2 = QtWidgets.QTableWidget(parent=self.set_value)
         self.ind_group_table_2.setGeometry(QtCore.QRect(10, 180, 1081, 491))
         self.ind_group_table_2.setObjectName("ind_group_table_2")
@@ -1007,6 +1051,7 @@ class Ui_MainWindow(object):
         self.edit_salary_pos_table_true.clicked.connect(self.editSalaryPosEdit)
         self.edit_salary_pos_table_ok.clicked.connect(self.editSalaryPos)
         self.edit_salary_pos_table_true_2.clicked.connect(self.fin_salary_dep_widget)
+        self.del_all.clicked.connect(self.DelAllStaff)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -1055,6 +1100,7 @@ class Ui_MainWindow(object):
         self.edit_salary_pos_table_true_2.setText(
             _translate("MainWindow", "Рассчитать заработную плату отдела")
         )
+        self.del_all.setText(_translate("MainWindow", "Очистить"))
         self.tabWindet.setTabText(
             self.tabWindet.indexOf(self.set_value),
             _translate("MainWindow", "Заполнить показатели"),

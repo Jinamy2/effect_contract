@@ -112,6 +112,9 @@ class Ui_Form_Add_Ind(object):
                 self.staff_indicators_table.item(i, 1).setBackground(
                     QtGui.QColor(255, 255, 0)
                 )
+                self.staff_indicators_table.item(i, 0).setBackground(
+                    QtGui.QColor(255, 255, 0)
+                )
             for j in range(2, self.staff_indicators_table.columnCount()):
                 cursor.execute(
                     "select name_ind from indicators where position_group in (select id from position_group where name_group = '{}')".format(
@@ -136,6 +139,9 @@ class Ui_Form_Add_Ind(object):
                 else:
                     self.staff_indicators_table.setItem(i, j, QTableWidgetItem(str(0)))
                     self.staff_indicators_table.item(i, j).setBackground(
+                        QtGui.QColor(255, 255, 0)
+                    )
+                    self.staff_indicators_table.item(i, 0).setBackground(
                         QtGui.QColor(255, 255, 0)
                     )
         connection.close()
@@ -244,6 +250,42 @@ class Ui_Form_Add_Ind(object):
         self.loadStaffI()
         self.loadKoaf()
 
+    def DeleteAll(self):
+        try:
+            connection = pymysql.connect(
+                host=host,
+                port=3306,
+                user=user,
+                password=password,
+                database=db_name,
+                cursorclass=pymysql.cursors.DictCursor,
+            )
+
+        except Exception as ex:
+            print("Соединение прервано")
+            print(ex)
+        cursor = connection.cursor()
+        name_dep = self.dep_line.text()
+        name_group = self.ind_group_input_line.text()
+        countRow = self.staff_indicators_table.rowCount()
+        for i in range(countRow):
+            staff = self.staff_indicators_table.item(i, 0).text()
+            cursor.execute(
+                "delete from indicators_values where staff in (select id from staff where position in (select id from position where position.department in (select id_dep from department where name_dep = '{}')) and position in (select pos_and_group.id_pos from pos_and_group where pos_and_group.id_group in (select position_group.id from position_group where name_group = '{}')) and CONCAT(staff.fam, ' ', staff.name, ' ',staff.otch) LIKE '{}')".format(
+                    name_dep, name_group, staff
+                )
+            )
+            connection.commit()
+            cursor.execute(
+                "delete from fin_staff_salary where name_staff in (select id from staff where position in (select id from position where position.department in (select id_dep from department where name_dep = '{}')) and position in (select pos_and_group.id_pos from pos_and_group where pos_and_group.id_group in (select position_group.id from position_group where name_group = '{}')) and CONCAT(staff.fam, ' ', staff.name, ' ',staff.otch) LIKE '{}')".format(
+                    name_dep, name_group, staff
+                )
+            )
+            connection.commit()
+        connection.close()
+        self.loadKoaf()
+        self.loadStaffI()
+
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(1106, 883)
@@ -258,6 +300,12 @@ class Ui_Form_Add_Ind(object):
         font.setPointSize(12)
         self.add_staff_int.setFont(font)
         self.add_staff_int.setObjectName("add_staff_int")
+        self.del_all = QtWidgets.QPushButton(parent=Form)
+        self.del_all.setGeometry(QtCore.QRect(350, 10, 250, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.del_all.setFont(font)
+        self.del_all.setObjectName("add_staff_int")
         self.ind_group_input_line = QtWidgets.QLineEdit(parent=Form)
         self.ind_group_input_line.setGeometry(QtCore.QRect(340, 70, 1, 1))
         self.ind_group_input_line.setObjectName("ind_group_input_line")
@@ -277,11 +325,13 @@ class Ui_Form_Add_Ind(object):
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
         self.add_staff_int.clicked.connect(self.InsertIndStaff)
+        self.del_all.clicked.connect(self.DeleteAll)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Занести значения показателей"))
         self.add_staff_int.setText(_translate("Form", "Занести значения показателей"))
+        self.del_all.setText(_translate("Form", "Очистить"))
         self.destroy_wind.setText(_translate("Form", "Выйти"))
         self.ind_group_input_line.setVisible(False)
         self.dep_line.setVisible(False)
